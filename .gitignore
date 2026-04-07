@@ -1,0 +1,31 @@
+# .gitignore
+
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+
+# Data that should not be committed
+chroma_db/
+logs/
+
+# OS
+.DS_Store
+.idea/
+.vscode/
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Docker
+*.tar
