@@ -23,6 +23,8 @@ python-multipart
 
 pypdf
 langchain-text-splitters
+langchain-community
+
 
 pydantic
 python-dotenv
