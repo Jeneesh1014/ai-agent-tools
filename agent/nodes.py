@@ -26,6 +26,17 @@ Question: {question}
 
 Reply with exactly one word: rag, web, or both."""
 
+ANSWER_PROMPT = """You are a research assistant. Answer the question using the context provided.
+If the context does not contain enough information, say so clearly.
+Be concise and accurate. When citing sources, use the filename or URL provided in the context.
+
+Context:
+{context}
+
+Question: {question}
+
+Answer:"""
+
 
 class AgentNodes:
     def __init__(self, rag_tool: RAGTool, web_tool: WebSearchTool, generator: Generator):
@@ -33,7 +44,7 @@ class AgentNodes:
         self.web_tool = web_tool
         self.generator = generator
 
-        # max_tokens=10 because we only need one word back — no point paying for more
+        # max_tokens=10 because we only need one word back
         self.router_llm = ChatGroq(
             api_key=os.environ["GROQ_API_KEY"],
             model=settings.GROQ_MODEL,
@@ -97,12 +108,76 @@ class AgentNodes:
         return {"web_results": serialized}
 
     def combine_node(self, state: AgentState) -> Dict:
-        # stub — Day 5
-        return {}
+        rag_results = state.get("rag_results") or []
+        web_results = state.get("web_results") or []
+        route = state.get("route", "rag")
+
+        context_parts = []
+        sources = []
+
+        if rag_results:
+            context_parts.append("=== Research Documents ===")
+            for r in rag_results:
+                context_parts.append(f"[Source: {r['source']}]\n{r['content']}")
+                sources.append(r["source"])
+
+        if web_results:
+            context_parts.append("=== Web Search Results ===")
+            for r in web_results:
+                context_parts.append(f"[Source: {r['title']} — {r['url']}]\n{r['content']}")
+                sources.append(r["url"])
+
+        combined_context = "\n\n".join(context_parts)
+
+        # deduplicate while preserving order
+        seen = set()
+        unique_sources = []
+        for s in sources:
+            if s not in seen:
+                seen.add(s)
+                unique_sources.append(s)
+
+        logger.info(
+            f"Combined context: {len(rag_results)} RAG + {len(web_results)} web results, "
+            f"{len(combined_context)} chars"
+        )
+        return {"combined_context": combined_context, "sources": unique_sources}
 
     def answer_node(self, state: AgentState) -> Dict:
-        # stub — Day 5
-        return {}
+        question = state["question"]
+        context = state.get("combined_context", "")
+        route = state.get("route", "rag")
+
+        if not context:
+            logger.warning("answer_node received empty context")
+            answer = "I was unable to find relevant information to answer your question."
+        else:
+            messages = [
+                HumanMessage(
+                    content=ANSWER_PROMPT.format(context=context, question=question)
+                )
+            ]
+            # generator.generate expects context + question — build the prompt ourselves
+            # so we can inject the full structured context cleanly
+            from langchain_groq import ChatGroq
+            llm = ChatGroq(
+                api_key=os.environ["GROQ_API_KEY"],
+                model=settings.GROQ_MODEL,
+                max_tokens=settings.MAX_TOKENS,
+                temperature=settings.TEMPERATURE,
+            )
+            response = llm.invoke(messages)
+            answer = response.content.strip()
+
+        logger.info(f"Answer generated: {len(answer)} chars via route '{route}'")
+
+        # append to history so future turns have context
+        new_history_entries = [
+            {"role": "user", "content": question},
+            {"role": "assistant", "content": answer},
+        ]
+
+        return {"answer": answer, "chat_history": new_history_entries}
 
 
 def _format_history(history: list) -> str:
