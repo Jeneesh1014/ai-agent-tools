@@ -70,7 +70,17 @@ class Retriever:
 
         client = chromadb.PersistentClient(path=str(self.config.chroma_db_path))
 
-        # delete and recreate so a re-run doesn't double the documents
+        # skip re-embedding if collection already exists with data — saves 80s on every restart
+        existing_collections = [c.name for c in client.list_collections()]
+        if self.config.collection_name in existing_collections:
+            collection = client.get_collection(self.config.collection_name)
+            if collection.count() > 0:
+                logger.info(
+                    f"Collection '{self.config.collection_name}' already has "
+                    f"{collection.count()} chunks — skipping ingestion"
+                )
+                return collection
+
         try:
             client.delete_collection(self.config.collection_name)
         except Exception:
@@ -146,9 +156,7 @@ class Retriever:
             v_score = vector_hits.get(content, {}).get("vector_score", 0.0)
             b_score = bm25_hits.get(content, {}).get("bm25_score", 0.0)
             combined = self.config.vector_weight * v_score + self.config.bm25_weight * b_score
-            source = (
-                vector_hits.get(content) or bm25_hits.get(content)
-            )["source"]
+            source = (vector_hits.get(content) or bm25_hits.get(content))["source"]
             merged.append({"content": content, "source": source, "score": combined})
 
         merged.sort(key=lambda x: x["score"], reverse=True)
