@@ -3,6 +3,7 @@ from typing import Dict
 
 from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage
+from agent.memory import format_history
 
 from agent.state import AgentState
 from agent.tools import RAGTool, WebSearchTool
@@ -54,7 +55,7 @@ class AgentNodes:
 
     def router_node(self, state: AgentState) -> Dict:
         question = state["question"]
-        history = _format_history(state.get("chat_history", []))
+        history = format_history(state.get("chat_history", []))
 
         prompt = ROUTING_PROMPT.format(
             history=history if history else "None",
@@ -180,19 +181,3 @@ class AgentNodes:
         return {"answer": answer, "chat_history": new_history_entries}
 
 
-def _format_history(history: list) -> str:
-    if not history:
-        return ""
-
-    # cap at last 5 exchanges — full history blows the token budget fast
-    recent = history[-10:]
-    lines = []
-    for item in recent:
-        role = item.get("role", "")
-        content = item.get("content", "")
-        if role == "user":
-            lines.append(f"User: {content}")
-        elif role == "assistant":
-            lines.append(f"Assistant: {content}")
-
-    return "\n".join(lines)
