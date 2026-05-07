@@ -14,11 +14,11 @@ This is Project 2 in my AI Engineer portfolio, built after a complete RAG docume
 
 Example routing behavior:
 
-| Question | Route | Why |
-| --- | --- | --- |
-| What is the attention mechanism? | RAG | Foundational concept in the research documents |
-| What LLM did Google release last week? | WEB | Needs current information |
-| How does LoRA compare with recent fine-tuning methods? | BOTH | Needs paper context and recent work |
+| Question                                               | Route | Why                                            |
+| ------------------------------------------------------ | ----- | ---------------------------------------------- |
+| What is the attention mechanism?                       | RAG   | Foundational concept in the research documents |
+| What LLM did Google release last week?                 | WEB   | Needs current information                      |
+| How does LoRA compare with recent fine-tuning methods? | BOTH  | Needs paper context and recent work            |
 
 The final answer includes cited sources, route metadata, result counts, and request latency.
 
@@ -44,22 +44,22 @@ Langfuse traces every agent run and node span.
 
 ## Tech Stack
 
-| Layer | Tool |
-| --- | --- |
-| Agent orchestration | LangGraph |
-| LLM | Groq `llama-3.1-8b-instant` |
-| Embeddings | `sentence-transformers/all-MiniLM-L6-v2` |
-| Vector DB | ChromaDB |
-| Hybrid search | Vector search + BM25 |
-| Reranking | Cohere `rerank-english-v3.0` |
-| Web search | Tavily |
-| Observability | Langfuse |
-| API | FastAPI |
-| UI | Gradio |
-| Tests | pytest |
-| Lint | Ruff |
-| Container | Docker + Docker Compose |
-| CI | GitHub Actions |
+| Layer               | Tool                                     |
+| ------------------- | ---------------------------------------- |
+| Agent orchestration | LangGraph                                |
+| LLM                 | Groq `llama-3.1-8b-instant`              |
+| Embeddings          | `sentence-transformers/all-MiniLM-L6-v2` |
+| Vector DB           | ChromaDB                                 |
+| Hybrid search       | Vector search + BM25                     |
+| Reranking           | Cohere `rerank-english-v3.0`             |
+| Web search          | Tavily                                   |
+| Observability       | Langfuse                                 |
+| API                 | FastAPI                                  |
+| UI                  | Gradio                                   |
+| Tests               | pytest                                   |
+| Lint                | Ruff                                     |
+| Container           | Docker + Docker Compose                  |
+| CI                  | GitHub Actions                           |
 
 ## Project Structure
 
@@ -211,12 +211,12 @@ reports/evaluation_results.json
 
 Current committed baseline:
 
-| Metric | Value |
-| --- | --- |
-| Cases | 10 |
-| Correct | 10 |
-| Routing accuracy | 100% |
-| Mode | Mock routing baseline |
+| Metric           | Value                 |
+| ---------------- | --------------------- |
+| Cases            | 10                    |
+| Correct          | 10                    |
+| Routing accuracy | 100%                  |
+| Mode             | Mock routing baseline |
 
 The committed baseline is intentionally API-free. Use `--live` to regenerate with real Groq, Cohere, Tavily, and Langfuse calls.
 
