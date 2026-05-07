@@ -2,6 +2,14 @@
 
 An AI research assistant that decides whether a question should be answered from local research papers, live web search, or both.
 
+## Live Demo
+
+🔗 https://your-app-name.onrender.com
+
+## API Docs
+
+🔗 https://your-app-name.onrender.com/docs
+
 The core idea is routing. The agent does not blindly run every tool. It uses a LangGraph router node to choose one of three paths:
 
 - `rag`: use local PDFs through hybrid retrieval and Cohere reranking
