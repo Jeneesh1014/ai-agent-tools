@@ -24,4 +24,4 @@ RUN mkdir -p chroma_db logs data/documents
 
 EXPOSE 8000 7860
 
-CMD ["python", "app/run.py"]
+CMD ["python", "-m", "app.run"]
