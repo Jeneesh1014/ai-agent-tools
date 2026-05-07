@@ -1,3 +1,5 @@
+# agent/graph.py
+
 import os
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import Send
@@ -6,6 +8,7 @@ from agent.state import AgentState
 from agent.nodes import AgentNodes
 from agent.tools import RAGTool, WebSearchTool
 from core.generation import Generator
+from observability.tracing import TracingClient
 from entity.config_entity import GeneratorConfig
 from config import settings
 from utils.logger import get_logger
@@ -52,7 +55,7 @@ def build_graph(nodes: AgentNodes) -> StateGraph:
 
 
 def create_agent():
-    """Build all dependencies and return a compiled graph. Call once at startup."""
+    """Build all dependencies and return compiled graph + tracer. Call once at startup."""
     rag_tool = RAGTool()
     web_tool = WebSearchTool()
     generator = Generator(
@@ -63,15 +66,25 @@ def create_agent():
             temperature=settings.TEMPERATURE,
         )
     )
-    nodes = AgentNodes(rag_tool, web_tool, generator)
-    return build_graph(nodes)
+    tracer = TracingClient()
+    nodes = AgentNodes(rag_tool, web_tool, generator, tracer)
+    graph = build_graph(nodes)
+    return graph, tracer
 
 
-def run_agent(graph, question: str, chat_history: list = None) -> dict:
+def run_agent(
+    graph,
+    tracer: TracingClient,
+    question: str,
+    chat_history: list = None,
+) -> dict:
     """
     Run one question through the graph and return the final state.
     chat_history is a list of {"role": ..., "content": ...} dicts.
     """
+    trace_id = tracer.generate_trace_id()
+    tracer.start_trace(trace_id, question)
+
     initial_state: AgentState = {
         "question": question,
         "route": None,
@@ -81,10 +94,17 @@ def run_agent(graph, question: str, chat_history: list = None) -> dict:
         "answer": None,
         "sources": None,
         "chat_history": chat_history or [],
-        "trace_id": None,
+        "trace_id": trace_id,
     }
 
     logger.info(f"Running agent: '{question[:80]}'")
     final_state = graph.invoke(initial_state)
-    logger.info(f"Agent done — route={final_state['route']}, answer={len(final_state.get('answer', ''))} chars")
+    logger.info(
+        f"Agent done — route={final_state['route']}, "
+        f"answer={len(final_state.get('answer', ''))} chars"
+    )
+
+    # flush after invoke so all spans are sent before the response returns
+    tracer.end_trace(trace_id)
+
     return final_state

@@ -1,13 +1,16 @@
+# agent/nodes.py
+
 import os
 from typing import Dict
 
 from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage
-from agent.memory import format_history
 
 from agent.state import AgentState
 from agent.tools import RAGTool, WebSearchTool
+from agent.memory import format_history
 from core.generation import Generator
+from observability.tracing import TracingClient
 from config import settings
 from utils.logger import get_logger
 
@@ -40,12 +43,20 @@ Answer:"""
 
 
 class AgentNodes:
-    def __init__(self, rag_tool: RAGTool, web_tool: WebSearchTool, generator: Generator):
+    def __init__(
+        self,
+        rag_tool: RAGTool,
+        web_tool: WebSearchTool,
+        generator: Generator,
+        tracer: TracingClient,
+    ):
         self.rag_tool = rag_tool
         self.web_tool = web_tool
         self.generator = generator
+        self.tracer = tracer
 
         # max_tokens=10 because we only need one word back
+        # low temp keeps routing decisions consistent
         self.router_llm = ChatGroq(
             api_key=os.environ["GROQ_API_KEY"],
             model=settings.GROQ_MODEL,
@@ -53,9 +64,18 @@ class AgentNodes:
             temperature=0.0,
         )
 
+        # separate instance so answer generation gets the full token budget
+        self.answer_llm = ChatGroq(
+            api_key=os.environ["GROQ_API_KEY"],
+            model=settings.GROQ_MODEL,
+            max_tokens=settings.MAX_TOKENS,
+            temperature=settings.TEMPERATURE,
+        )
+
     def router_node(self, state: AgentState) -> Dict:
         question = state["question"]
         history = format_history(state.get("chat_history", []))
+        trace_id = state.get("trace_id", "")
 
         prompt = ROUTING_PROMPT.format(
             history=history if history else "None",
@@ -74,10 +94,12 @@ class AgentNodes:
             route = "rag"
 
         logger.info(f"Router: '{question[:70]}' → {route}")
+        self.tracer.log_router(trace_id, question, route)
         return {"route": route}
 
     def rag_node(self, state: AgentState) -> Dict:
         results = self.rag_tool.search(state["question"])
+        trace_id = state.get("trace_id", "")
 
         # convert dataclasses to plain dicts so LangGraph state stays serializable
         serialized = [
@@ -90,10 +112,12 @@ class AgentNodes:
         ]
 
         logger.info(f"RAG node: {len(serialized)} results")
+        self.tracer.log_rag(trace_id, len(serialized))
         return {"rag_results": serialized}
 
     def web_node(self, state: AgentState) -> Dict:
         results = self.web_tool.search(state["question"])
+        trace_id = state.get("trace_id", "")
 
         serialized = [
             {
@@ -106,12 +130,13 @@ class AgentNodes:
         ]
 
         logger.info(f"Web node: {len(serialized)} results")
+        self.tracer.log_web(trace_id, len(serialized))
         return {"web_results": serialized}
 
     def combine_node(self, state: AgentState) -> Dict:
         rag_results = state.get("rag_results") or []
         web_results = state.get("web_results") or []
-        route = state.get("route", "rag")
+        trace_id = state.get("trace_id", "")
 
         context_parts = []
         sources = []
@@ -142,12 +167,14 @@ class AgentNodes:
             f"Combined context: {len(rag_results)} RAG + {len(web_results)} web results, "
             f"{len(combined_context)} chars"
         )
+        self.tracer.log_combine(trace_id, len(combined_context))
         return {"combined_context": combined_context, "sources": unique_sources}
 
     def answer_node(self, state: AgentState) -> Dict:
         question = state["question"]
         context = state.get("combined_context", "")
         route = state.get("route", "rag")
+        trace_id = state.get("trace_id", "")
 
         if not context:
             logger.warning("answer_node received empty context")
@@ -158,19 +185,11 @@ class AgentNodes:
                     content=ANSWER_PROMPT.format(context=context, question=question)
                 )
             ]
-            # generator.generate expects context + question — build the prompt ourselves
-            # so we can inject the full structured context cleanly
-            from langchain_groq import ChatGroq
-            llm = ChatGroq(
-                api_key=os.environ["GROQ_API_KEY"],
-                model=settings.GROQ_MODEL,
-                max_tokens=settings.MAX_TOKENS,
-                temperature=settings.TEMPERATURE,
-            )
-            response = llm.invoke(messages)
+            response = self.answer_llm.invoke(messages)
             answer = response.content.strip()
 
         logger.info(f"Answer generated: {len(answer)} chars via route '{route}'")
+        self.tracer.log_answer(trace_id, len(answer), settings.GROQ_MODEL)
 
         # append to history so future turns have context
         new_history_entries = [
@@ -179,5 +198,3 @@ class AgentNodes:
         ]
 
         return {"answer": answer, "chat_history": new_history_entries}
-
-
