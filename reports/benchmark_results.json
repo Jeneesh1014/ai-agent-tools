@@ -1,0 +1,189 @@
+{
+  "project": "Intelligent Research Agent",
+  "model": "llama-3.1-8b-instant",
+  "summary": {
+    "total_queries": 20,
+    "p50_latency_seconds": 1.3750000107393134e-06,
+    "p95_latency_seconds": 2.209000740549527e-06,
+    "avg_latency_seconds": 1.429000212738174e-06,
+    "by_route": {
+      "rag": {
+        "count": 11,
+        "p50_latency_seconds": 1.45800004247576e-06,
+        "p95_latency_seconds": 2.91600008495152e-06
+      },
+      "web": {
+        "count": 4,
+        "p50_latency_seconds": 1.3750000107393134e-06,
+        "p95_latency_seconds": 1.6250005501206033e-06
+      },
+      "both": {
+        "count": 5,
+        "p50_latency_seconds": 1.0410003596916795e-06,
+        "p95_latency_seconds": 2.209000740549527e-06
+      }
+    }
+  },
+  "results": [
+    {
+      "question": "What is the attention mechanism?",
+      "route": "rag",
+      "latency_seconds": 2.91600008495152e-06,
+      "rag_results_count": 1,
+      "web_results_count": 0,
+      "mode": "mock"
+    },
+    {
+      "question": "Explain RAG in simple terms.",
+      "route": "rag",
+      "latency_seconds": 1.45800004247576e-06,
+      "rag_results_count": 1,
+      "web_results_count": 0,
+      "mode": "mock"
+    },
+    {
+      "question": "What AI model did Google release recently?",
+      "route": "web",
+      "latency_seconds": 1.5000005078036338e-06,
+      "rag_results_count": 0,
+      "web_results_count": 1,
+      "mode": "mock"
+    },
+    {
+      "question": "Compare LoRA with the latest fine-tuning methods.",
+      "route": "both",
+      "latency_seconds": 1.0410003596916795e-06,
+      "rag_results_count": 1,
+      "web_results_count": 1,
+      "mode": "mock"
+    },
+    {
+      "question": "How do transformers use positional encoding?",
+      "route": "rag",
+      "latency_seconds": 1.499999598308932e-06,
+      "rag_results_count": 1,
+      "web_results_count": 0,
+      "mode": "mock"
+    },
+    {
+      "question": "What are the newest long-context LLM techniques?",
+      "route": "web",
+      "latency_seconds": 1.6250005501206033e-06,
+      "rag_results_count": 0,
+      "web_results_count": 1,
+      "mode": "mock"
+    },
+    {
+      "question": "How does CLIP connect text and images?",
+      "route": "rag",
+      "latency_seconds": 1.5410005289595574e-06,
+      "rag_results_count": 1,
+      "web_results_count": 0,
+      "mode": "mock"
+    },
+    {
+      "question": "Compare BERT pretraining with current embedding models.",
+      "route": "both",
+      "latency_seconds": 2.209000740549527e-06,
+      "rag_results_count": 1,
+      "web_results_count": 1,
+      "mode": "mock"
+    },
+    {
+      "question": "What is BM25?",
+      "route": "rag",
+      "latency_seconds": 1.2910004443256184e-06,
+      "rag_results_count": 1,
+      "web_results_count": 0,
+      "mode": "mock"
+    },
+    {
+      "question": "How does my RAG pipeline compare with recent agentic RAG systems?",
+      "route": "both",
+      "latency_seconds": 9.169998520519584e-07,
+      "rag_results_count": 1,
+      "web_results_count": 1,
+      "mode": "mock"
+    },
+    {
+      "question": "Explain residual connections.",
+      "route": "rag",
+      "latency_seconds": 1.1669999366858974e-06,
+      "rag_results_count": 1,
+      "web_results_count": 0,
+      "mode": "mock"
+    },
+    {
+      "question": "What are current open-source LLM trends?",
+      "route": "web",
+      "latency_seconds": 1.249999513674993e-06,
+      "rag_results_count": 0,
+      "web_results_count": 1,
+      "mode": "mock"
+    },
+    {
+      "question": "How does Stable Diffusion generate images?",
+      "route": "rag",
+      "latency_seconds": 1.3330000001587905e-06,
+      "rag_results_count": 1,
+      "web_results_count": 0,
+      "mode": "mock"
+    },
+    {
+      "question": "Compare CNNs with modern vision transformers.",
+      "route": "rag",
+      "latency_seconds": 1.5410005289595574e-06,
+      "rag_results_count": 1,
+      "web_results_count": 0,
+      "mode": "mock"
+    },
+    {
+      "question": "What is chain-of-thought prompting?",
+      "route": "rag",
+      "latency_seconds": 1.2500004231696948e-06,
+      "rag_results_count": 1,
+      "web_results_count": 0,
+      "mode": "mock"
+    },
+    {
+      "question": "What changed in AI regulation recently?",
+      "route": "web",
+      "latency_seconds": 1.2080008673365228e-06,
+      "rag_results_count": 0,
+      "web_results_count": 1,
+      "mode": "mock"
+    },
+    {
+      "question": "Explain reinforcement learning from human feedback.",
+      "route": "rag",
+      "latency_seconds": 1.45800004247576e-06,
+      "rag_results_count": 1,
+      "web_results_count": 0,
+      "mode": "mock"
+    },
+    {
+      "question": "How does Mistral compare with newer open models?",
+      "route": "both",
+      "latency_seconds": 1.4170000213198364e-06,
+      "rag_results_count": 1,
+      "web_results_count": 1,
+      "mode": "mock"
+    },
+    {
+      "question": "What is Word2Vec?",
+      "route": "rag",
+      "latency_seconds": 1.0000003385357559e-06,
+      "rag_results_count": 1,
+      "web_results_count": 0,
+      "mode": "mock"
+    },
+    {
+      "question": "Compare GPT-3 with the latest frontier models.",
+      "route": "both",
+      "latency_seconds": 9.57999873207882e-07,
+      "rag_results_count": 1,
+      "web_results_count": 1,
+      "mode": "mock"
+    }
+  ]
+}

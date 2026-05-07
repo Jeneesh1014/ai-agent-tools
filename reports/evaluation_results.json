@@ -1,0 +1,99 @@
+{
+  "project": "Intelligent Research Agent",
+  "model": "llama-3.1-8b-instant",
+  "total_cases": 10,
+  "correct": 10,
+  "routing_accuracy": 1.0,
+  "results": [
+    {
+      "question": "What is the attention mechanism in transformers?",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "correct": true,
+      "mode": "mock",
+      "latency_seconds": 3.0840001272736117e-06,
+      "answer_preview": "Mock routing-only evaluation; run with --live for full agent answers."
+    },
+    {
+      "question": "Explain how LoRA reduces trainable parameters.",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "correct": true,
+      "mode": "mock",
+      "latency_seconds": 1.708000127109699e-06,
+      "answer_preview": "Mock routing-only evaluation; run with --live for full agent answers."
+    },
+    {
+      "question": "What is retrieval augmented generation?",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "correct": true,
+      "mode": "mock",
+      "latency_seconds": 1.7920001482707448e-06,
+      "answer_preview": "Mock routing-only evaluation; run with --live for full agent answers."
+    },
+    {
+      "question": "How do convolutional neural networks process images?",
+      "expected_route": "rag",
+      "predicted_route": "rag",
+      "correct": true,
+      "mode": "mock",
+      "latency_seconds": 1.6670001059537753e-06,
+      "answer_preview": "Mock routing-only evaluation; run with --live for full agent answers."
+    },
+    {
+      "question": "What AI model did Google release last week?",
+      "expected_route": "web",
+      "predicted_route": "web",
+      "correct": true,
+      "mode": "mock",
+      "latency_seconds": 1.5000005078036338e-06,
+      "answer_preview": "Mock routing-only evaluation; run with --live for full agent answers."
+    },
+    {
+      "question": "What are the latest LLM benchmark results this month?",
+      "expected_route": "web",
+      "predicted_route": "web",
+      "correct": true,
+      "mode": "mock",
+      "latency_seconds": 1.3330000001587905e-06,
+      "answer_preview": "Mock routing-only evaluation; run with --live for full agent answers."
+    },
+    {
+      "question": "Who is currently leading OpenAI?",
+      "expected_route": "web",
+      "predicted_route": "web",
+      "correct": true,
+      "mode": "mock",
+      "latency_seconds": 1.333999534836039e-06,
+      "answer_preview": "Mock routing-only evaluation; run with --live for full agent answers."
+    },
+    {
+      "question": "Compare the transformer paper with the latest long-context LLM work.",
+      "expected_route": "both",
+      "predicted_route": "both",
+      "correct": true,
+      "mode": "mock",
+      "latency_seconds": 1.9170001905877143e-06,
+      "answer_preview": "Mock routing-only evaluation; run with --live for full agent answers."
+    },
+    {
+      "question": "How does LoRA compare with recent parameter-efficient fine-tuning methods?",
+      "expected_route": "both",
+      "predicted_route": "both",
+      "correct": true,
+      "mode": "mock",
+      "latency_seconds": 1.7909997040987946e-06,
+      "answer_preview": "Mock routing-only evaluation; run with --live for full agent answers."
+    },
+    {
+      "question": "How does my RAG research compare to the newest agentic RAG systems?",
+      "expected_route": "both",
+      "predicted_route": "both",
+      "correct": true,
+      "mode": "mock",
+      "latency_seconds": 1.333999534836039e-06,
+      "answer_preview": "Mock routing-only evaluation; run with --live for full agent answers."
+    }
+  ]
+}
